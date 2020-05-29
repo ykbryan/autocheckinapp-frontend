@@ -1,5 +1,7 @@
 # autocheckin-web
 
+test
+
 ## Project setup
 ```
 yarn install
