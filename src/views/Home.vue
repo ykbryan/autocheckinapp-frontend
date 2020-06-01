@@ -1,62 +1,51 @@
 <template>
-  <div class="app mt-5 mb-5" :class="{ 'sign-up-active': showSignUp }">
-    <div class="loader" :class="{ 'loader-active': showLoader }">
-      <b-spinner variant="success" label="Spinning"></b-spinner>
-    </div>
-    <div class="overlay-app">
-      <div class="overlay">
-        <div class="overlay-left">
-          <h2>Welcome Back!</h2>
-          <p>Please login with your personal info</p>
-          <b-button class="button rounded-pill" @click="showSignUp = !showSignUp">Sign In</b-button>
+  <article>
+    <b-toast id="toast" :title="toast.title">
+      {{ toast.message }}
+    </b-toast>
+    <div class="app mt-5 mb-5" :class="{ 'sign-up-active': showSignUp }">
+      <div class="loader" :class="{ 'loader-active': showLoader }">
+        <b-spinner variant="success" label="Spinning"></b-spinner>
+      </div>
+      <div class="overlay-app">
+        <div class="overlay">
+          <div class="overlay-left">
+            <h2>Welcome Back!</h2>
+            <p>Please login with your personal info</p>
+            <b-button
+              class="button rounded-pill"
+              @click="showSignUp = !showSignUp"
+              >Sign In</b-button
+            >
+          </div>
+          <div class="overlay-right">
+            <h2>Hello, Friend!</h2>
+            <p>Please enter your personal details</p>
+            <b-button
+              class="button rounded-pill"
+              @click="showSignUp = !showSignUp"
+              >Sign Up</b-button
+            >
+          </div>
         </div>
-        <div class="overlay-right">
-          <h2>Hello, Friend!</h2>
-          <p>Please enter your personal details</p>
-          <b-button class="button rounded-pill" @click="showSignUp = !showSignUp">Sign Up</b-button>
-        </div>
       </div>
-    </div>
-    <div class="form sign-up">
-      <h2>Registration</h2>
-      <b-form-input id="input-name" placeholder="Name" v-model="name" trim></b-form-input>
-      <b-form-input id="input-email" placeholder="Email" v-model="email" trim></b-form-input>
-      <vue-web-cam
-        class="webcam rounded"
-        ref="registerCam"
-        :device-id="deviceId"
-        width="100%"
-        height="200"
-        @started="onStarted"
-        @stopped="onStopped"
-        @error="onError"
-        @cameras="onCameras"
-        @camera-change="onCameraChange"
-        v-if="registerImg === null"
-      />
-      <img height="200" :src="registerImg" v-if="registerImg !== null" class="rounded" />
-      <div v-if="devices.length > 1">
-        <select class="form-control" v-model="camera">
-          <option>-- Select Device --</option>
-          <option
-            v-for="device in devices"
-            :key="device.deviceId"
-            :value="device.deviceId"
-          >{{ device.label }}</option>
-        </select>
-      </div>
-      <div>
-        <b-button class="button rounded-pill" @click="signUp">Sign Up</b-button>
-      </div>
-    </div>
-    <div class="form sign-in">
-      <form action="#">
-        <h2>Sign in</h2>
-        <div>with your camera</div>
-        <img height="200" :src="loginImg" v-if="loginImg !== null" class="rounded" />
+      <div class="form sign-up">
+        <h2>Registration</h2>
+        <b-form-input
+          id="input-name"
+          placeholder="Name"
+          v-model="name"
+          trim
+        ></b-form-input>
+        <b-form-input
+          id="input-email"
+          placeholder="Email"
+          v-model="email"
+          trim
+        ></b-form-input>
         <vue-web-cam
           class="webcam rounded"
-          ref="loginCam"
+          ref="registerCam"
           :device-id="deviceId"
           width="100%"
           height="200"
@@ -65,7 +54,13 @@
           @error="onError"
           @cameras="onCameras"
           @camera-change="onCameraChange"
-          v-if="loginImg === null"
+          v-if="registerImg === null"
+        />
+        <img
+          height="200"
+          :src="registerImg"
+          v-if="registerImg !== null"
+          class="rounded"
         />
         <div v-if="devices.length > 1">
           <select class="form-control" v-model="camera">
@@ -74,59 +69,113 @@
               v-for="device in devices"
               :key="device.deviceId"
               :value="device.deviceId"
-            >{{ device.label }}</option>
+              >{{ device.label }}</option
+            >
           </select>
         </div>
-        <b-button class="button rounded-pill" @click="signIn">Sign In</b-button>
-      </form>
+        <div>
+          <b-button class="button rounded-pill" @click="signUp"
+            >Sign Up</b-button
+          >
+        </div>
+      </div>
+      <div class="form sign-in">
+        <form action="#">
+          <h2>Sign in</h2>
+          <div>with your camera</div>
+          <img
+            height="200"
+            :src="loginImg"
+            v-if="loginImg !== null"
+            class="rounded"
+          />
+          <vue-web-cam
+            class="webcam rounded"
+            ref="loginCam"
+            :device-id="deviceId"
+            width="100%"
+            height="200"
+            @started="onStarted"
+            @stopped="onStopped"
+            @error="onError"
+            @cameras="onCameras"
+            @camera-change="onCameraChange"
+            v-if="loginImg === null"
+          />
+          <div v-if="devices.length > 1">
+            <select class="form-control" v-model="camera">
+              <option>-- Select Device --</option>
+              <option
+                v-for="device in devices"
+                :key="device.deviceId"
+                :value="device.deviceId"
+                >{{ device.label }}</option
+              >
+            </select>
+          </div>
+          <b-button class="button rounded-pill" @click="signIn"
+            >Sign In</b-button
+          >
+        </form>
+      </div>
     </div>
-  </div>
+  </article>
 </template>
 
 <script>
-import { WebCam } from "vue-web-cam";
+import { WebCam } from 'vue-web-cam';
 
 export default {
   computed: {
     device: function() {
-      return this.devices.find(n => n.deviceId === this.deviceId);
-    }
+      return this.devices.find((n) => n.deviceId === this.deviceId);
+    },
   },
   data: () => {
     return {
       showLoader: false,
       showSignUp: false,
-      name: "",
-      email: "",
+      name: '',
+      email: '',
       registerImg: null,
       loginImg: null,
       camera: null,
       deviceId: null,
-      devices: []
+      devices: [],
+      toast: {
+        title: 'Login Successful',
+        message: 'Hello {{somebody}}, Welcome to Demo!',
+      },
     };
   },
   components: {
-    "vue-web-cam": WebCam
+    'vue-web-cam': WebCam,
   },
   methods: {
     signUp() {
-      console.log("signUp");
+      console.log('signUp');
       this.registerImg = this.$refs.registerCam.capture();
       this.showLoader = true;
+      this.toast = {
+        title: 'Sign Up Successful',
+        message: 'Welcome to the team, {{somebody}}',
+      };
+      this.$bvToast.show('toast');
     },
     signIn() {
-      console.log("signIn");
+      console.log('signIn');
       this.loginImg = this.$refs.loginCam.capture();
       this.showLoader = true;
+      this.$bvToast.show('toast');
     },
     onCapture() {
       this.registerImg = this.$refs.loginCam.capture();
     },
     onStarted(stream) {
-      console.log("On Started Event", stream);
+      console.log('On Started Event', stream);
     },
     onStopped(stream) {
-      console.log("On Stopped Event", stream);
+      console.log('On Stopped Event', stream);
     },
     onStop() {
       this.$refs.loginCam.stop();
@@ -135,17 +184,17 @@ export default {
       this.$refs.loginCam.start();
     },
     onError(error) {
-      console.log("On Error Event", error);
+      console.log('On Error Event', error);
     },
     onCameras(cameras) {
       this.devices = cameras;
-      console.log("On Cameras Event", cameras);
+      console.log('On Cameras Event', cameras);
     },
     onCameraChange(deviceId) {
       this.deviceId = deviceId;
       this.camera = deviceId;
-      console.log("On Camera Change Event", deviceId);
-    }
+      console.log('On Camera Change Event', deviceId);
+    },
   },
   watch: {
     camera: function(id) {
@@ -169,8 +218,8 @@ export default {
         this.$refs.loginCam.start();
         this.$refs.registerCam.stop();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -189,6 +238,7 @@ export default {
 }
 .loader-active {
   display: inherit;
+  text-align: center;
 }
 .app {
   position: relative;
