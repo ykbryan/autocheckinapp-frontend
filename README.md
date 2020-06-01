@@ -1,6 +1,4 @@
-# autocheckin-web
-
-test
+# autocheckin-app
 
 ## Project setup
 ```
