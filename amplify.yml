@@ -1,0 +1,26 @@
+version: 0.1
+backend:
+  phases:
+    # IMPORTANT - Please verify your build commands
+    build:
+      commands:
+        - '# Execute Amplify CLI with the helper script'
+        - amplify version
+        - amplifyPush --simple
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - ls -l
+        - npm install -g yarn
+        - yarn
+    build:
+      commands:
+        - yarn build
+  artifacts:
+    # IMPORTANT - Please verify your build output directory
+    baseDirectory: /dist/
+    files:
+      - '**/*'
+  cache:
+    paths: []
