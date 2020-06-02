@@ -3,7 +3,12 @@
     <b-toast id="toast" :title="toast.title">{{ toast.message }}</b-toast>
     <div class="app" :class="{ 'sign-up-active': showSignUp, 'home-active': isUser  }">
       <div class="loader" :class="{ 'loader-active': showLoader }">
-        <b-spinner variant="success" label="Spinning"></b-spinner>
+        <div>
+          <p>
+            <strong>{{uploadPercentage}}</strong>%
+          </p>
+          <b-spinner variant="success" label="Spinning"></b-spinner>
+        </div>
       </div>
       <div class="overlay-top text-center">
         <h2 class="mb-3">Welcome back!</h2>
@@ -150,7 +155,8 @@ export default {
       toast: {
         title: "Login Successful",
         message: "Hello {{somebody}}, Welcome to Demo!"
-      }
+      },
+      uploadPercentage: 0
     };
   },
   components: {
@@ -161,7 +167,9 @@ export default {
       this.uploadImageToS3("register.jpg", this.registerImg)
         .then(async result => {
           console.log(result);
-          this.showLoader = false;
+          setTimeout(() => {
+            this.showLoader = false;
+          }, 500); // purposely slow it down to see the percentage & loader
           this.toast.title = "Work in progress";
           this.toast.message = "Image has been uploaded.. ";
           this.$bvToast.show("toast");
@@ -173,11 +181,13 @@ export default {
       this.uploadImageToS3("login.jpg", this.loginImg)
         .then(async result => {
           console.log(result);
-          this.showLoader = false;
+          setTimeout(() => {
+            this.showLoader = false;
+            // this.isUser = true;
+          }, 500); // purposely slow it down to see the percentage & loader
           this.toast.title = "Still work in progress";
           this.toast.message = "Image has been uploaded.. ";
           this.$bvToast.show("toast");
-          // this.isUser = true;
         })
         .catch(err => console.log(err));
     },
@@ -202,15 +212,21 @@ export default {
       this.camera = deviceId;
       console.log("On Camera Change Event", deviceId);
     },
+    setPercentage(progress) {
+      const percentage = (progress.loaded / progress.total) * 100;
+      this.uploadPercentage = percentage;
+    },
     uploadImageToS3(filename, encodedImg) {
       const img = this.decodeImage(encodedImg);
-
       this.showLoader = true;
-      // this.$bvToast.show("toast");
       Auth.currentCredentials();
+      const refSetPercentage = this.setPercentage;
       return Storage.put(filename, img, {
         level: "public",
-        contentType: "image/jpeg"
+        contentType: "image/jpeg",
+        progressCallback(progress) {
+          refSetPercentage(progress);
+        }
       });
     },
     decodeImage(encodedImg) {
@@ -286,19 +302,18 @@ article {
 }
 .loader {
   position: absolute;
-  display: none;
   background-color: #eeeeee;
   opacity: 0.7;
   width: 768px;
-  height: 580px;
+  height: 100%;
   z-index: 100;
-  span {
-    margin-top: 35%;
-  }
+  display: none;
 }
 .loader-active {
-  display: inherit;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 .app {
   position: relative;
