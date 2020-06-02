@@ -14,12 +14,6 @@
         "categories": {
             "auth": {
                 "autocheckinappff33607f": {}
-            },
-            "hosting": {
-                "amplifyhosting": {
-                    "appId": "d1l695du1rbvi6",
-                    "type": "cicd"
-                }
             }
         }
     }
