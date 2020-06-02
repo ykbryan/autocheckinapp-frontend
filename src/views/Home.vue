@@ -97,6 +97,8 @@
 
 <script>
 import { WebCam } from "vue-web-cam";
+import Auth from "@aws-amplify/auth";
+import Storage from "@aws-amplify/storage";
 
 export default {
   computed: {
@@ -126,20 +128,27 @@ export default {
   },
   methods: {
     signUp() {
-      console.log("signUp");
-      this.registerImg = this.$refs.registerCam.capture();
-      this.showLoader = true;
-      this.toast = {
-        title: "Sign Up Successful",
-        message: "Welcome to the team, {{somebody}}"
-      };
-      this.$bvToast.show("toast");
+      this.uploadImageToS3("register.jpg", this.registerImg)
+        .then(async result => {
+          console.log(result);
+          this.showLoader = false;
+          this.toast.title = "Work in progress";
+          this.toast.message = "Image has been uploaded.. ";
+          this.$bvToast.show("toast");
+        })
+        .catch(err => console.log(err));
     },
     signIn() {
-      console.log("signIn");
       this.loginImg = this.$refs.loginCam.capture();
-      this.showLoader = true;
-      this.$bvToast.show("toast");
+      this.uploadImageToS3("login.jpg", this.loginImg)
+        .then(async result => {
+          console.log(result);
+          this.showLoader = false;
+          this.toast.title = "Still work in progress";
+          this.toast.message = "Image has been uploaded.. ";
+          this.$bvToast.show("toast");
+        })
+        .catch(err => console.log(err));
     },
     onCapture() {
       this.registerImg = this.$refs.registerCam.capture();
@@ -155,6 +164,54 @@ export default {
       this.deviceId = deviceId;
       this.camera = deviceId;
       console.log("On Camera Change Event", deviceId);
+    },
+    uploadImageToS3(filename, encodedImg) {
+      const img = this.decodeImage(encodedImg);
+
+      this.showLoader = true;
+      // this.$bvToast.show("toast");
+      Auth.currentCredentials();
+      return Storage.put(filename, img, {
+        level: "public",
+        contentType: "image/jpeg"
+      });
+    },
+    decodeImage(encodedImg) {
+      // Split the base64 string in data and contentType
+      const block = encodedImg.split(";");
+      // Get the content type of the image
+      const contentType = block[0].split(":")[1]; // In this case "image/gif"
+      // get the real base64 content of the file
+      const realData = block[1].split(",")[1]; // In this case "R0lGODlhPQBEAPeoAJosM...."
+      // Convert it to a blob to upload
+      return this.b64toBlob(realData, contentType);
+    },
+    b64toBlob(b64Data, contentType, sliceSize) {
+      contentType = contentType || "";
+      sliceSize = sliceSize || 512;
+
+      const byteCharacters = atob(b64Data);
+      const byteArrays = [];
+
+      for (
+        let offset = 0;
+        offset < byteCharacters.length;
+        offset += sliceSize
+      ) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+
+        byteArrays.push(byteArray);
+      }
+
+      const blob = new Blob(byteArrays, { type: contentType });
+      return blob;
     }
   },
   watch: {
