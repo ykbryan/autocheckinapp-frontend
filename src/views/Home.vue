@@ -10,18 +10,32 @@
       </div>
       <div class="overlay-bottom text-center">
         <h3 class="mt-3">Another place here</h3>
-        <b-button class="button rounded-pill" @click="isUser = !isUser;">Dismiss</b-button>
+        <b-button class="button rounded-pill" @click="restart">Dismiss</b-button>
       </div>
       <div class="overlay-app">
         <div class="overlay">
           <div class="overlay-left">
             <h2>Welcome Back!</h2>
-            <p>Please login with your personal info</p>
+            <img
+              src="https://a0.awsstatic.com/libra-css/images/site/touch-icon-ipad-144-smile.png"
+              alt="AWS Demo"
+              width="150"
+              title="AWS"
+            />
+            <p>If you already have an existing account, you can go to the sign in page to login with your webcam.</p>
             <b-button class="button rounded-pill" @click="showSignUp = !showSignUp">Sign In</b-button>
           </div>
           <div class="overlay-right">
-            <h2>Hello, Friend!</h2>
-            <p>Please enter your personal details</p>
+            <h2>Hello Friend!</h2>
+            <p>
+              <img
+                src="https://a0.awsstatic.com/libra-css/images/site/touch-icon-ipad-144-smile.png"
+                alt="AWS Demo"
+                width="150"
+                title="AWS"
+              />
+            </p>
+            <p>If you are new here, you can go to the sign up page to register your account with your webcam.</p>
             <b-button class="button rounded-pill" @click="showSignUp = !showSignUp">Sign Up</b-button>
           </div>
         </div>
@@ -42,7 +56,7 @@
           v-if="registerImg === null"
         />
         <img
-          height="200"
+          height="190"
           width="264"
           :src="registerImg"
           v-if="registerImg !== null"
@@ -75,7 +89,7 @@
           <h2>Sign in</h2>
           <div>with your camera</div>
           <img
-            height="200"
+            height="190"
             width="264"
             class="rounded mt-1 mb-2"
             :src="loginImg"
@@ -166,6 +180,12 @@ export default {
           // this.isUser = true;
         })
         .catch(err => console.log(err));
+    },
+    restart() {
+      this.isUser = false;
+      this.showLoader = false;
+      this.loginImg = null;
+      this.registerImg = null;
     },
     onCapture() {
       this.registerImg = this.$refs.registerCam.capture();
