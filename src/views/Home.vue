@@ -34,7 +34,15 @@
           @camera-change="onCameraChange"
           v-if="registerImg === null"
         />
-        <img height="200" :src="registerImg" v-if="registerImg !== null" class="rounded" />
+        <img
+          height="200"
+          :src="registerImg"
+          v-if="registerImg !== null"
+          class="registerImg rounded"
+          alt="click img to reset"
+          title="click img to reset"
+          @click="registerImg = null"
+        />
         <div v-if="devices.length > 1">
           <select class="form-control" v-model="camera">
             <option>-- Select Device --</option>
@@ -46,7 +54,12 @@
           </select>
         </div>
         <div>
-          <b-button class="button rounded-pill" @click="signUp">Sign Up</b-button>
+          <b-button
+            v-if="registerImg === null"
+            class="button rounded-pill"
+            @click="onCapture"
+          >Take Photo</b-button>
+          <b-button v-if="registerImg !== null" class="button rounded-pill" @click="signUp">Sign Up</b-button>
         </div>
       </div>
       <div class="form sign-in">
@@ -129,7 +142,7 @@ export default {
       this.$bvToast.show("toast");
     },
     onCapture() {
-      this.registerImg = this.$refs.loginCam.capture();
+      this.registerImg = this.$refs.registerCam.capture();
     },
     onError(error) {
       console.log("On Error Event", error);
@@ -150,7 +163,7 @@ export default {
     },
     devices: function() {
       const [first] = this.devices;
-      if (first) {
+      if (this.deviceId === null) {
         this.camera = first.deviceId;
         this.deviceId = first.deviceId;
       }
@@ -217,7 +230,7 @@ article {
     left: -100%;
     height: 100%;
     width: 200%;
-    background: linear-gradient(to bottom right, #ff4b2b, #ff416c);
+    background: linear-gradient(to bottom right, #ffac31, #ff9900);
     color: #fff;
     transform: translateX(0);
     transition: transform 0.5s ease-in-out;
@@ -227,6 +240,9 @@ article {
   }
   .webcam {
     border: 1px solid #a3a3a3;
+  }
+  .registerImg:hover {
+    cursor: pointer;
   }
   @mixin overlays($property) {
     position: absolute;
@@ -248,8 +264,8 @@ article {
   }
 }
 .button {
-  border: 1px solid #ff4b2b;
-  background-color: #ff4b2b;
+  border: 1px solid #ff9900;
+  background-color: #ff9900;
   text-transform: uppercase;
   margin: 5px;
   padding: 10px 40px;
