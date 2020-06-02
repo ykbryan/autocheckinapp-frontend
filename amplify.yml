@@ -6,11 +6,13 @@ backend:
       commands:
         - '# Execute Amplify CLI with the helper script'
         - amplify version
+        - npm install -g @aws-amplify/cli
         - amplifyPush --simple
 frontend:
   phases:
     preBuild:
       commands:
+        - amplify version
         - ls -l
         - npm install -g yarn
         - yarn
