@@ -13,12 +13,12 @@ frontend:
     preBuild:
       commands:
         - amplify version
-        - ls -l
-        - npm install -g yarn
-        - yarn
+        - npm install
     build:
       commands:
-        - yarn build
+        - npm run build
+        - ls -l
+        - cd src && ls -l
   artifacts:
     # IMPORTANT - Please verify your build output directory
     baseDirectory: /dist/
