@@ -1,9 +1,16 @@
 <template>
   <article>
     <b-toast id="toast" :title="toast.title">{{ toast.message }}</b-toast>
-    <div class="app" :class="{ 'sign-up-active': showSignUp }">
+    <div class="app" :class="{ 'sign-up-active': showSignUp, 'home-active': isUser  }">
       <div class="loader" :class="{ 'loader-active': showLoader }">
         <b-spinner variant="success" label="Spinning"></b-spinner>
+      </div>
+      <div class="overlay-top text-center">
+        <h2 class="mb-3">Welcome back!</h2>
+      </div>
+      <div class="overlay-bottom text-center">
+        <h3 class="mt-3">Another place here</h3>
+        <b-button class="button rounded-pill" @click="isUser = !isUser;">Dismiss</b-button>
       </div>
       <div class="overlay-app">
         <div class="overlay">
@@ -36,9 +43,10 @@
         />
         <img
           height="200"
+          width="264"
           :src="registerImg"
           v-if="registerImg !== null"
-          class="registerImg rounded"
+          class="registerImg rounded mt-1 mb-2"
           alt="click img to reset"
           title="click img to reset"
           @click="registerImg = null"
@@ -66,7 +74,14 @@
         <form action="#">
           <h2>Sign in</h2>
           <div>with your camera</div>
-          <img height="200" :src="loginImg" v-if="loginImg !== null" class="rounded" />
+          <img
+            height="200"
+            width="264"
+            class="rounded mt-1 mb-2"
+            :src="loginImg"
+            @click="loginImg = null"
+            v-if="loginImg !== null"
+          />
           <vue-web-cam
             class="webcam rounded"
             ref="loginCam"
@@ -110,6 +125,7 @@ export default {
     return {
       showLoader: false,
       showSignUp: false,
+      isUser: false,
       name: "",
       email: "",
       registerImg: null,
@@ -147,6 +163,7 @@ export default {
           this.toast.title = "Still work in progress";
           this.toast.message = "Image has been uploaded.. ";
           this.$bvToast.show("toast");
+          // this.isUser = true;
         })
         .catch(err => console.log(err));
     },
@@ -272,6 +289,32 @@ article {
   overflow: hidden;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2), 0 10px 10px rgba(0, 0, 0, 0.2);
   background: #ffffff;
+  .overlay-top {
+    background-color: #ffac31;
+    position: absolute;
+    top: -40%;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    overflow: hidden;
+    transition: transform 0.5s ease-in-out;
+    z-index: 99;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 101;
+  }
+  .overlay-bottom {
+    background-color: #fff;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    overflow: hidden;
+    transition: transform 0.5s ease-in-out;
+    z-index: 101;
+  }
   .overlay-app {
     position: absolute;
     top: 0;
@@ -349,6 +392,7 @@ article {
   text-align: center;
   background: #ffffff;
   transition: all 0.5s ease-in-out;
+  overflow: hidden;
 }
 .sign-in,
 .sign-up,
@@ -387,6 +431,14 @@ article {
   }
   .overlay-right {
     transform: translateX(20%);
+  }
+}
+.home-active {
+  .overlay-top {
+    transform: translateY(100%);
+  }
+  .overlay-bottom {
+    transform: translateY(-100%);
   }
 }
 @keyframes show {
