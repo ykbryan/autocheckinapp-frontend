@@ -88,6 +88,9 @@
           >Take Photo</b-button>
           <b-button v-if="registerImg !== null" class="button rounded-pill" @click="signUp">Sign Up</b-button>
         </div>
+        <div class="mobile-only">
+          <a href="#" @click="showSignUp = !showSignUp">Back to login</a>
+        </div>
       </div>
       <div class="form sign-in">
         <form action="#">
@@ -123,6 +126,9 @@
             </select>
           </div>
           <b-button class="button rounded-pill" @click="signIn">Sign In</b-button>
+          <div class="mobile-only">
+            <a href="#" @click="showSignUp = !showSignUp">No account? Register now!</a>
+          </div>
         </form>
       </div>
     </div>
@@ -379,6 +385,14 @@ article {
   .registerImg:hover {
     cursor: pointer;
   }
+  .mobile-only {
+    display: none;
+  }
+  .sign-in {
+    .button {
+      margin: 15px;
+    }
+  }
   @mixin overlays($property) {
     position: absolute;
     display: flex;
@@ -488,6 +502,38 @@ article {
   50% {
     opacity: 1;
     z-index: 10;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .app {
+    border-radius: 0;
+    .form {
+      padding: 30px;
+
+      .button {
+        padding: 10px 100px;
+      }
+    }
+    .mobile-only {
+      display: flex;
+      a {
+        margin: 0 auto;
+      }
+    }
+    .sign-up,
+    .sign-in {
+      width: 100%;
+    }
+    .sign-up {
+      left: -100%;
+    }
+    .overlay-app {
+      left: -100%;
+    }
+    .overlay {
+      display: none;
+    }
   }
 }
 </style>
