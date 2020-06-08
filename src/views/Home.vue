@@ -182,7 +182,8 @@
 import { WebCam } from 'vue-web-cam';
 import Auth from '@aws-amplify/auth';
 import Storage from '@aws-amplify/storage';
-import API from '@aws-amplify/api';
+import apihelper from '@/common/apihelper';
+import imagehelper from '@/common/imagehelper';
 
 export default {
   computed: {
@@ -213,50 +214,6 @@ export default {
     'vue-web-cam': WebCam,
   },
   methods: {
-    postToRegister(imageUrl) {
-      const apiName = 'AutoCheckInAPI';
-      const path = '/register';
-      const params = {
-        // OPTIONAL
-        headers: {}, // OPTIONAL
-        response: true, // OPTIONAL (return the entire Axios response object instead of only response.data)
-        body: {
-          // OPTIONAL
-          image: imageUrl.toLowerCase(),
-        },
-      };
-
-      API.post(apiName, path, params)
-        .then((response) => {
-          // Add your code here
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(error.response);
-        });
-    },
-    postToLogin(imageUrl) {
-      const apiName = 'AutoCheckInAPI';
-      const path = '/checkin';
-      const params = {
-        // OPTIONAL
-        headers: {}, // OPTIONAL
-        response: true, // OPTIONAL (return the entire Axios response object instead of only response.data)
-        body: {
-          // OPTIONAL
-          image: imageUrl.toLowerCase(),
-        },
-      };
-
-      API.post(apiName, path, params)
-        .then((response) => {
-          // Add your code here
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(error.response);
-        });
-    },
     signUp() {
       this.uploadImageToS3(`register/${this.name}.jpg`, this.registerImg)
         .then(async (result) => {
@@ -267,7 +224,7 @@ export default {
           this.toast.title = 'Work in progress';
           this.toast.message = 'Image has been uploaded.. ';
           this.$bvToast.show('toast');
-          this.postToRegister(`public/register/${this.name}.jpg`);
+          apihelper.postToRegister(`public/register/${this.name}.jpg`);
         })
         .catch((err) => console.log(err));
     },
@@ -284,7 +241,7 @@ export default {
           this.toast.title = 'Still work in progress';
           this.toast.message = 'Image has been uploaded.. ';
           this.$bvToast.show('toast');
-          this.postToLogin(`public/login/${imageName}.jpg`);
+          apihelper.postToLogin(`public/login/${imageName}.jpg`);
         })
         .catch((err) => console.log(err));
     },
@@ -314,7 +271,7 @@ export default {
       this.uploadPercentage = percentage;
     },
     uploadImageToS3(filename, encodedImg) {
-      const img = this.decodeImage(encodedImg);
+      const img = imagehelper.decodeImage(encodedImg);
       this.showLoader = true;
       Auth.currentCredentials();
       const refSetPercentage = this.setPercentage;
@@ -325,43 +282,6 @@ export default {
           refSetPercentage(progress);
         },
       });
-    },
-    decodeImage(encodedImg) {
-      // Split the base64 string in data and contentType
-      const block = encodedImg.split(';');
-      // Get the content type of the image
-      const contentType = block[0].split(':')[1]; // In this case "image/gif"
-      // get the real base64 content of the file
-      const realData = block[1].split(',')[1]; // In this case "R0lGODlhPQBEAPeoAJosM...."
-      // Convert it to a blob to upload
-      return this.b64toBlob(realData, contentType);
-    },
-    b64toBlob(b64Data, contentType, sliceSize) {
-      contentType = contentType || '';
-      sliceSize = sliceSize || 512;
-
-      const byteCharacters = atob(b64Data);
-      const byteArrays = [];
-
-      for (
-        let offset = 0;
-        offset < byteCharacters.length;
-        offset += sliceSize
-      ) {
-        const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-        const byteNumbers = new Array(slice.length);
-        for (let i = 0; i < slice.length; i++) {
-          byteNumbers[i] = slice.charCodeAt(i);
-        }
-
-        const byteArray = new Uint8Array(byteNumbers);
-
-        byteArrays.push(byteArray);
-      }
-
-      const blob = new Blob(byteArrays, { type: contentType });
-      return blob;
     },
   },
   watch: {
