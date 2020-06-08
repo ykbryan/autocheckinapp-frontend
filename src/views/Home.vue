@@ -5,15 +5,10 @@
       class="app"
       :class="{ 'sign-up-active': showSignUp, 'home-active': isUser }"
     >
-      <div class="loader" :class="{ 'loader-active': showLoader }">
-        <div>
-          <p>
-            <strong>{{ uploadPercentage }}</strong
-            >%
-          </p>
-          <b-spinner variant="success" label="Spinning"></b-spinner>
-        </div>
-      </div>
+      <LoadingView
+        :isActive="showLoader"
+        :uploadPercentage="uploadPercentage"
+      ></LoadingView>
       <div class="overlay-top text-center">
         <h2 class="mb-3">Welcome back!</h2>
       </div>
@@ -180,6 +175,7 @@
 
 <script>
 import { WebCam } from 'vue-web-cam';
+import LoadingView from '@/components/LoadingView';
 import Auth from '@aws-amplify/auth';
 import Storage from '@aws-amplify/storage';
 import apihelper from '@/common/apihelper';
@@ -212,6 +208,7 @@ export default {
   },
   components: {
     'vue-web-cam': WebCam,
+    LoadingView,
   },
   methods: {
     signUp() {
@@ -259,12 +256,10 @@ export default {
     },
     onCameras(cameras) {
       this.devices = cameras;
-      console.log('On Cameras Event', cameras);
     },
     onCameraChange(deviceId) {
       this.deviceId = deviceId;
       this.camera = deviceId;
-      console.log('On Camera Change Event', deviceId);
     },
     setPercentage(progress) {
       const percentage = (progress.loaded / progress.total) * 100;
@@ -309,242 +304,6 @@ export default {
   },
 };
 </script>
-
 <style lang="scss" scoped>
-article {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-}
-.loader {
-  position: absolute;
-  background-color: #eeeeee;
-  opacity: 0.7;
-  width: 768px;
-  height: 100%;
-  z-index: 100;
-  display: none;
-}
-.loader-active {
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-}
-.app {
-  position: relative;
-  width: 768px;
-  height: 580px;
-  margin: 0 auto;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2), 0 10px 10px rgba(0, 0, 0, 0.2);
-  background: #ffffff;
-  .overlay-top {
-    background-color: #ffac31;
-    position: absolute;
-    top: -40%;
-    left: 0;
-    width: 100%;
-    height: 40%;
-    overflow: hidden;
-    transition: transform 0.5s ease-in-out;
-    z-index: 99;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    z-index: 101;
-  }
-  .overlay-bottom {
-    background-color: #fff;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    height: 60%;
-    overflow: hidden;
-    transition: transform 0.5s ease-in-out;
-    z-index: 101;
-  }
-  .overlay-app {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 50%;
-    height: 100%;
-    overflow: hidden;
-    transition: transform 0.5s ease-in-out;
-    z-index: 99;
-  }
-  .overlay {
-    position: relative;
-    left: -100%;
-    height: 100%;
-    width: 200%;
-    background: linear-gradient(to bottom right, #ffac31, #ff9900);
-    color: #fff;
-    transform: translateX(0);
-    transition: transform 0.5s ease-in-out;
-    .button {
-      border-color: #ffffff;
-    }
-  }
-  .webcam {
-    border: 1px solid #a3a3a3;
-  }
-  .registerImg:hover {
-    cursor: pointer;
-  }
-  .mobile-only {
-    display: none;
-  }
-  .sign-in {
-    .button {
-      margin: 15px;
-    }
-  }
-  @mixin overlays($property) {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    flex-direction: column;
-    padding: 70px 40px;
-    text-align: center;
-    transform: translateX($property);
-    transition: transform 0.5s ease-in-out;
-  }
-  .overlay-left {
-    @include overlays(-20%);
-  }
-  .overlay-right {
-    @include overlays(0);
-    right: 0;
-  }
-}
-.button {
-  border: 1px solid #ff9900;
-  background-color: #ff9900;
-  text-transform: uppercase;
-  margin: 5px;
-  padding: 10px 40px;
-  cursor: pointer;
-  transition: transform 0.1s ease-in;
-  &:active {
-    transform: scale(0.9);
-  }
-  &:focus {
-    outline: none;
-  }
-}
-.btn-clear {
-  background-color: #a3a3a3;
-  border: 1px solid #999999;
-}
-.form {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  flex-direction: column;
-  padding: 50px 60px;
-  text-align: center;
-  background: #ffffff;
-  transition: all 0.5s ease-in-out;
-  overflow: hidden;
-}
-.sign-in,
-.sign-up,
-.overlay-left,
-.overlay-right {
-  width: 50%;
-  height: 100%;
-}
-.sign-in {
-  left: 0;
-  z-index: 2;
-}
-.sign-up {
-  left: 0;
-  z-index: 1;
-  opacity: 0;
-}
-.sign-up-active {
-  .sign-in {
-    transform: translateX(100%);
-  }
-  .sign-up {
-    transform: translateX(100%);
-    opacity: 1;
-    z-index: 5;
-    animation: show 0.5s;
-  }
-  .overlay-app {
-    transform: translateX(-100%);
-  }
-  .overlay {
-    transform: translateX(50%);
-  }
-  .overlay-left {
-    transform: translateX(0);
-  }
-  .overlay-right {
-    transform: translateX(20%);
-  }
-}
-.home-active {
-  .overlay-top {
-    transform: translateY(100%);
-  }
-  .overlay-bottom {
-    transform: translateY(-100%);
-  }
-}
-@keyframes show {
-  0% {
-    opacity: 0;
-    z-index: 1;
-  }
-  49% {
-    opacity: 0;
-    z-index: 1;
-  }
-  50% {
-    opacity: 1;
-    z-index: 10;
-  }
-}
-
-@media only screen and (max-width: 600px) {
-  .app {
-    border-radius: 0;
-    .form {
-      padding: 30px;
-
-      .button {
-        padding: 10px 100px;
-      }
-    }
-    .mobile-only {
-      display: flex;
-      a {
-        margin: 0 auto;
-      }
-    }
-    .sign-up,
-    .sign-in {
-      width: 100%;
-    }
-    .sign-up {
-      left: -100%;
-    }
-    .overlay-app {
-      left: -100%;
-    }
-    .overlay {
-      display: none;
-    }
-  }
-}
+@import '@/styles/home.scss';
 </style>
