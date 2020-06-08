@@ -9,7 +9,18 @@ import Amplify from '@aws-amplify/core';
 //@ts-ignore
 import awsconfig from './aws-exports';
 
-Amplify.configure(awsconfig);
+Amplify.configure({
+  API: {
+    endpoints: [
+      {
+        name: 'AutoCheckInAPI',
+        endpoint:
+          'https://hf2ow2fmbd.execute-api.ap-southeast-1.amazonaws.com/Prod',
+      },
+    ],
+  },
+  ...awsconfig,
+});
 Vue.config.productionTip = false;
 
 new Vue({
