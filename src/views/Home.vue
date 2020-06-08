@@ -216,7 +216,7 @@ export default {
     postToRegister(imageUrl) {
       const apiName = 'AutoCheckInAPI';
       const path = '/register';
-      const myInit = {
+      const params = {
         // OPTIONAL
         headers: {}, // OPTIONAL
         response: true, // OPTIONAL (return the entire Axios response object instead of only response.data)
@@ -226,7 +226,7 @@ export default {
         },
       };
 
-      API.post(apiName, path, myInit)
+      API.post(apiName, path, params)
         .then((response) => {
           // Add your code here
           console.log(response);
@@ -238,7 +238,7 @@ export default {
     postToLogin(imageUrl) {
       const apiName = 'AutoCheckInAPI';
       const path = '/checkin';
-      const myInit = {
+      const params = {
         // OPTIONAL
         headers: {}, // OPTIONAL
         response: true, // OPTIONAL (return the entire Axios response object instead of only response.data)
@@ -248,7 +248,7 @@ export default {
         },
       };
 
-      API.post(apiName, path, myInit)
+      API.post(apiName, path, params)
         .then((response) => {
           // Add your code here
           console.log(response);
