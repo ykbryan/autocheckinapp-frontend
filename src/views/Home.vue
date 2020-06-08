@@ -212,18 +212,20 @@ export default {
   },
   methods: {
     signUp() {
-      this.uploadImageToS3(`register/${this.name}.jpg`, this.registerImg)
-        .then(async (result) => {
-          console.log(result);
-          setTimeout(() => {
-            this.showLoader = false;
-          }, 500); // purposely slow it down to see the percentage & loader
-          this.toast.title = 'Work in progress';
-          this.toast.message = 'Image has been uploaded.. ';
-          this.$bvToast.show('toast');
-          apihelper.postToRegister(`public/register/${this.name}.jpg`);
-        })
-        .catch((err) => console.log(err));
+      if (this.name !== '')
+        this.uploadImageToS3(`register/${this.name}.jpg`, this.registerImg)
+          .then(async (result) => {
+            console.log(result);
+            setTimeout(() => {
+              this.showLoader = false;
+            }, 500); // purposely slow it down to see the percentage & loader
+            this.toast.title = 'Work in progress';
+            this.toast.message = 'Image has been uploaded.. ';
+            this.$bvToast.show('toast');
+            apihelper.postToRegister(`public/register/${this.name}.jpg`);
+          })
+          .catch((err) => console.log(err));
+      else alert('please enter your name');
     },
     signIn() {
       const imageName = Math.floor(Date.now() / 1000);
