@@ -9,18 +9,11 @@ export default {
       response: true, // OPTIONAL (return the entire Axios response object instead of only response.data)
       body: {
         // OPTIONAL
-        image: imageUrl.toLowerCase(),
+        image: imageUrl,
       },
     };
 
-    API.post(apiName, path, params)
-      .then((response) => {
-        // Add your code here
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error.response);
-      });
+    return API.post(apiName, path, params);
   },
   postToLogin: function(imageUrl) {
     const apiName = 'AutoCheckInAPI';
@@ -31,17 +24,10 @@ export default {
       response: true, // OPTIONAL (return the entire Axios response object instead of only response.data)
       body: {
         // OPTIONAL
-        image: imageUrl.toLowerCase(),
+        image: imageUrl,
       },
     };
 
-    API.post(apiName, path, params)
-      .then((response) => {
-        // Add your code here
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error.response);
-      });
+    return API.post(apiName, path, params);
   },
 };

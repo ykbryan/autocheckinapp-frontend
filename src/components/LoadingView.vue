@@ -1,9 +1,8 @@
 <template>
   <div class="loader" :class="{ 'loader-active': isActive }">
     <div>
-      <p v-if="uploadPercentage === null">
-        <strong>{{ uploadPercentage }}</strong
-        >%
+      <p v-if="uploadPercentage !== null">
+        <strong>{{ uploadPercentage }}</strong>%
       </p>
       <b-spinner variant="success" label="Spinning"></b-spinner>
     </div>
@@ -11,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class LoadingView extends Vue {
