@@ -13,7 +13,14 @@ export default {
       },
     };
 
-    return API.post(apiName, path, params);
+    return API.post(apiName, path, params)
+      .then((response) => {
+        return response;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response;
+      });
   },
   postToLogin: function(imageUrl) {
     const apiName = 'AutoCheckInAPI';
@@ -28,6 +35,13 @@ export default {
       },
     };
 
-    return API.post(apiName, path, params);
+    return API.post(apiName, path, params)
+      .then((response) => {
+        return response;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response;
+      });
   },
 };

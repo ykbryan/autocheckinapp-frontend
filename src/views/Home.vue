@@ -176,72 +176,52 @@ export default {
     LoadingView
   },
   methods: {
-    signUp() {
-      if (this.name !== "")
-        this.uploadImageToS3(`register/${this.name}.jpg`, this.registerImg)
-          .then(() => {
-            apihelper
-              .postToRegister(`public/register/${this.name}.jpg`)
-              .then(response => {
-                // Add your code here
-                console.log(response);
-                const { data, status } = response;
+    async signUp() {
+      if (this.name.trim() === "") {
+        alert("please enter your name");
+        return;
+      }
+      const imageName = `register/${this.name}.jpg`;
+      const s3response = await this.uploadImageToS3(
+        imageName,
+        this.registerImg
+      );
+      const response = await apihelper.postToRegister(
+        `public/${s3response.key}`
+      );
 
-                setTimeout(() => {
-                  this.showLoader = false;
-                }, 500); // purposely slow it down to see the percentage & loader
-                this.toast.title = status === 200 ? "Success!" : "Error";
-                this.toast.message = data.message;
-                this.$bvToast.show("toast");
-              })
-              .catch(error => {
-                console.log(error.response);
-                const { data } = error.response;
-                this.toast.title = "Error registering";
-                this.toast.message = data.message;
-                this.$bvToast.show("toast");
-                this.restart();
-                this.showLoader = false;
-              });
-          })
-          .catch(err => console.log(err));
-      else alert("please enter your name");
+      const { data, status } = response;
+      this.promptUser(status, data.message, data, false);
+      this.restart();
     },
-    signIn() {
-      const imageName = Math.floor(Date.now() / 1000);
+    async signIn() {
+      const imageName = `login/${Math.floor(Date.now() / 1000)}.jpg`;
       this.loginImg = this.$refs.loginCam.capture();
-      this.uploadImageToS3(`login/${imageName}.jpg`, this.loginImg)
-        .then(() => {
-          apihelper
-            .postToLogin(`public/login/${imageName}.jpg`)
-            .then(response => {
-              // Add your code here
-              console.log(response);
-              const { data, status } = response;
+      const s3response = await this.uploadImageToS3(imageName, this.loginImg);
+      const response = await apihelper.postToLogin(`public/${s3response.key}`);
 
-              setTimeout(() => {
-                this.showLoader = false;
-                this.isUser = true;
-              }, 500); // purposely slow it down to see the percentage & loader
-              this.toast.title = status === 200 ? "Success!" : "Error";
-              this.toast.message = data.message;
-              this.member.title = "Welcome to the Event";
-              this.member.message = data;
-              this.$bvToast.show("toast");
-            })
-            .catch(error => {
-              console.log(error.response);
-              const { data } = error.response;
-              this.toast.title = "Error logging in";
-              this.toast.message = data.message;
-              this.$bvToast.show("toast");
-              this.restart();
-              this.showLoader = false;
-            });
-        })
-        .catch(err => console.log(err));
+      const { data, status } = response;
+      this.promptUser(status, data.message, data, true);
+    },
+    promptUser(status, message, data, showMember) {
+      this.toast.title = status === 200 ? "Success!" : "Error";
+      this.toast.message = message;
+      this.$bvToast.show("toast");
+
+      if (showMember && status === 200) {
+        this.member.title = "Welcome to the Event";
+        this.member.message = data;
+        this.showLoader = false;
+        setTimeout(() => {
+          this.isUser = true;
+        }, 500); // purposely slow it down to see the percentage & loader
+      } else if (status === 500) {
+        this.restart();
+      }
     },
     restart() {
+      this.name = "";
+      this.email = "";
       this.isUser = false;
       this.showLoader = false;
       this.loginImg = null;
@@ -266,7 +246,6 @@ export default {
     },
     setPercentage(progress) {
       const percentage = (progress.loaded / progress.total) * 100;
-      console.log(percentage);
       this.uploadPercentage = percentage;
     },
     uploadImageToS3(filename, encodedImg) {
@@ -274,13 +253,22 @@ export default {
       this.showLoader = true;
       Auth.currentCredentials();
       const refSetPercentage = this.setPercentage;
-      return Storage.put(filename, img, {
+      const result = Storage.put(filename, img, {
         level: "public",
         contentType: "image/jpeg",
         progressCallback(progress) {
           refSetPercentage(progress);
         }
-      });
+      })
+        .then(response => {
+          return response;
+        })
+        .catch(error => {
+          console.log(error);
+          return error.response;
+        });
+
+      return result;
     }
   },
   watch: {
