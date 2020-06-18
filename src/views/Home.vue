@@ -8,7 +8,22 @@
       </div>
       <div class="overlay-bottom text-center">
         <h5 class="mt-3 mb-3 ml-5 mr-5">{{ member.message }}</h5>
-        <b-button class="button rounded-pill" @click="restart">Dismiss</b-button>
+        <img
+          src="@/assets/qr.jpg"
+          width="150"
+          alt="QR Feedback"
+          title="QR code to provide feedback"
+        />
+
+        <div>
+          <b-button
+            class="button rounded-pill"
+            href="https://bit.ly/3bOsZ3u"
+            target="_blank"
+            title="Give us feedback"
+          >Give us feedback</b-button>
+          <b-button class="button rounded-pill" @click="restart">Dismiss</b-button>
+        </div>
       </div>
       <div class="overlay-app">
         <div class="overlay">
