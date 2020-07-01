@@ -62,7 +62,7 @@
       <div class="form sign-up">
         <h2>Registration</h2>
         <b-form-input id="input-name" placeholder="Name" v-model="name" trim></b-form-input>
-        <b-form-input id="input-email" placeholder="Email" v-model="email" v-if="email !== ''" trim></b-form-input>
+        <b-form-input id="input-email" placeholder="Email" v-model="email" trim></b-form-input>
         <vue-web-cam
           class="webcam rounded"
           ref="registerCam"
@@ -72,18 +72,20 @@
           @error="onError"
           @cameras="onCameras"
           @camera-change="onCameraChange"
-          v-if="registerImg === null"
         />
-        <img
-          height="190"
-          width="264"
-          :src="registerImg"
-          v-if="registerImg !== null"
-          class="registerImg rounded mt-1 mb-2"
-          alt="click img to reset"
-          title="click img to reset"
-          @click="restart"
-        />
+        <div style="width: 100%" v-if="registerImages.length !== 0">
+          <div v-for="img in registerImages" v-bind:key="img">
+            <img
+              width="50"
+              :src="img"
+              class="registerImg rounded mt-1 mb-2"
+              alt="click img to reset"
+              title="click img to reset"
+              @click="restart"
+            />
+          </div>
+        </div>
+
         <div v-if="devices.length > 1">
           <select class="form-control" v-model="camera">
             <option>-- Select Device --</option>
@@ -96,11 +98,15 @@
         </div>
         <div>
           <b-button
-            v-if="registerImg === null"
+            v-if="registerImages.length === 0"
             class="button rounded-pill"
             @click="onCapture"
           >Take Photo</b-button>
-          <b-button v-if="registerImg !== null" class="button rounded-pill" @click="signUp">Sign Up</b-button>
+          <b-button
+            v-if="registerImages.length === maxImages"
+            class="button rounded-pill"
+            @click="signUp"
+          >Sign Up</b-button>
         </div>
         <div class="mobile-only">
           <a href="#" @click="showSignUp = !showSignUp">Back to login</a>
@@ -171,6 +177,8 @@ export default {
       name: "",
       email: "",
       registerImg: null,
+      registerImages: [],
+      maxImages: 5,
       loginImg: null,
       camera: null,
       deviceId: null,
@@ -196,6 +204,7 @@ export default {
         alert("please enter your name");
         return;
       }
+      // TODO: upload all the images via registerImages
       const imageName = `register/${this.name}.jpg`;
       const s3response = await this.uploadImageToS3(
         imageName,
@@ -241,13 +250,24 @@ export default {
       this.showLoader = false;
       this.loginImg = null;
       this.registerImg = null;
+      this.registerImages = [];
       setTimeout(() => {
         this.$refs.loginCam.start();
         this.$refs.registerCam.start();
       }, 500);
     },
     onCapture() {
-      this.registerImg = this.$refs.registerCam.capture();
+      this.registerImages = [];
+      const takePhoto = () => {
+        setTimeout(() => {
+          const image = this.$refs.registerCam.capture();
+          this.registerImages.push(image);
+          if (this.registerImages.length < this.maxImages) {
+            takePhoto();
+          }
+        }, 500);
+      };
+      takePhoto();
     },
     onError(error) {
       console.log("On Error Event", error);

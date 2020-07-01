@@ -16,5 +16,23 @@
                 "autocheckinappff33607f": {}
             }
         }
+    },
+    "eptwo": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-autocheckinapp-eptwo-114212-authRole",
+            "UnauthRoleArn": "arn:aws:iam::907833590179:role/amplify-autocheckinapp-eptwo-114212-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::907833590179:role/amplify-autocheckinapp-eptwo-114212-authRole",
+            "Region": "ap-southeast-1",
+            "DeploymentBucketName": "amplify-autocheckinapp-eptwo-114212-deployment",
+            "UnauthRoleName": "amplify-autocheckinapp-eptwo-114212-unauthRole",
+            "StackName": "amplify-autocheckinapp-eptwo-114212",
+            "StackId": "arn:aws:cloudformation:ap-southeast-1:907833590179:stack/amplify-autocheckinapp-eptwo-114212/db5aa1c0-bb4c-11ea-adbe-028a077ce4f4",
+            "AmplifyAppId": "d29cxu6t9r7lfz"
+        },
+        "categories": {
+            "auth": {
+                "autocheckinappff33607f": {}
+            }
+        }
     }
 }

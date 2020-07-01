@@ -59,6 +59,10 @@
   .webcam {
     border: 1px solid #a3a3a3;
   }
+  .registerImg {
+    float: left;
+    margin: 1px;
+  }
   .registerImg:hover {
     cursor: pointer;
   }
@@ -114,7 +118,7 @@
   align-items: center;
   justify-content: space-around;
   flex-direction: column;
-  padding: 50px 60px;
+  padding: 20px 60px;
   text-align: center;
   background: #ffffff;
   transition: all 0.5s ease-in-out;
