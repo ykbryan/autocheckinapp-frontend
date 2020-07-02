@@ -203,19 +203,38 @@ export default {
       if (this.name.trim() === "") {
         alert("please enter your name");
         return;
+      } else if (this.email.trim() === "") {
+        alert("please enter your email");
+        return;
+      } else if (this.registerImages.length === 0) {
+        alert("Take a few photos pls");
+        return;
       }
-      // TODO: upload all the images via registerImages
-      const imageName = `register/${this.name}.jpg`;
-      const s3response = await this.uploadImageToS3(
-        imageName,
-        this.registerImg
-      );
-      const response = await apihelper.postToRegister(
-        `public/${s3response.key}`
-      );
 
-      const { data, status } = response;
-      this.promptUser(status, data.message, data, false);
+      // generating a timestamp to make filename random
+      const date = new Date();
+      const timestamp = date.getTime();
+
+      const userdata = {
+        name: this.name,
+        email: this.email
+      };
+
+      // TODO: upload all the images via registerImages
+      const imageUrls = [];
+      while (this.registerImages.length > 0) {
+        const imageName = `register/${timestamp}-${this.name}-${this.registerImages.length}.jpg`;
+        const image = this.registerImages.shift();
+        const s3response = await this.uploadImageToS3(imageName, image);
+        imageUrls.push(`public/${s3response.key}`);
+      }
+      console.log(imageUrls);
+      // const response =
+      if (imageUrls.length > 0)
+        await apihelper.postToRegister(userdata, imageUrls);
+
+      // const { data, status } = response;
+      // this.promptUser(status, data.message, data, false);
       this.restart();
     },
     async signIn() {
@@ -259,13 +278,13 @@ export default {
     onCapture() {
       this.registerImages = [];
       const takePhoto = () => {
-        setTimeout(() => {
-          const image = this.$refs.registerCam.capture();
-          this.registerImages.push(image);
-          if (this.registerImages.length < this.maxImages) {
+        const image = this.$refs.registerCam.capture();
+        this.registerImages.push(image);
+        if (this.registerImages.length < this.maxImages) {
+          setTimeout(() => {
             takePhoto();
-          }
-        }, 500);
+          }, 500);
+        }
       };
       takePhoto();
     },

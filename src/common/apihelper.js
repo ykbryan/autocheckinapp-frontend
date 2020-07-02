@@ -1,15 +1,17 @@
 import API from '@aws-amplify/api';
 export default {
-  postToRegister: function(imageUrl) {
+  postToRegister: function(userdata, imageUrls) {
     const apiName = 'AutoCheckInAPI';
     const path = '/register';
+    const { name, email } = userdata;
     const params = {
       // OPTIONAL
       headers: {}, // OPTIONAL
       response: true, // OPTIONAL (return the entire Axios response object instead of only response.data)
       body: {
-        // OPTIONAL
-        image: imageUrl,
+        name,
+        email,
+        images: imageUrls,
       },
     };
 
