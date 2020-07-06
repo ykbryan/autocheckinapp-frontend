@@ -16,7 +16,7 @@ Amplify.configure({
       {
         name: 'AutoCheckInAPI',
         endpoint:
-          'https://cj2aqjavvl.execute-api.ap-southeast-1.amazonaws.com/Prod',
+          'https://erhv853u5f.execute-api.ap-southeast-1.amazonaws.com/Prod',
       },
     ],
   },
