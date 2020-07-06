@@ -230,11 +230,11 @@ export default {
       }
       console.log(imageUrls);
       // const response =
-      if (imageUrls.length > 0)
-        await apihelper.postToRegister(userdata, imageUrls);
-
-      // const { data, status } = response;
-      // this.promptUser(status, data.message, data, false);
+      if (imageUrls.length > 0) {
+        const response = await apihelper.postToRegister(userdata, imageUrls);
+        const { message } = response;
+        this.promptUser(200, message, null, false);
+      }
       this.restart();
     },
     async signIn() {
