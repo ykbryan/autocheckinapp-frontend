@@ -228,12 +228,11 @@ export default {
         const s3response = await this.uploadImageToS3(imageName, image);
         imageUrls.push(`public/${s3response.key}`);
       }
-      console.log(imageUrls);
-      // const response =
+
       if (imageUrls.length > 0) {
         const response = await apihelper.postToRegister(userdata, imageUrls);
-        const { message } = response;
-        this.promptUser(200, message, null, false);
+        const { status, data } = response;
+        this.promptUser(status, data.message, data, false);
       }
       this.restart();
     },
